@@ -14,16 +14,38 @@ app.config['DEBUG'] = True
 app.config['SCORES'] = '_scores.txt'
 
 def init_scores():
+    """
+    Initialize the local scores file
+    """
     name = app.config['SCORES']
     if not os.path.isfile(name):
         with open(name, 'w') as f:
             f.write(json.dumps([]))
 
 def sanitize_scores(scs):
-    # TODO
+    """
+    Sanitize scores from an external source
+    """
+    for i, e in enumerate(scs):
+        u, s, t = e[:3]
+        u = re.sub(r'\W+', '', u.strip())[:40]
+
+        try:
+            s = str(int(s))
+        except ValueError:
+            s = 0
+
+        t = re.sub(r'[^\w\., ]+', '', t)
+
+        scs[i] = (u, s, t)
+
     return scs
 
 def merge_scores(scs):
+    """
+    Merge local scores with the given ones, and save the new list in the local
+    file.
+    """
     init_scores()
     with open(app.config['SCORES'], 'r') as f:
         scores = json.loads(f.read())
@@ -43,8 +65,12 @@ def merge_scores(scs):
         s1 = scores[0]
         s2 = scs[0]
 
-        if s1[:2] == s2[:2]:
-            # don't add duplicates in the file
+        if int(s1[1]) <= 0:
+            scores.pop(0)
+            continue
+
+        if int(s2[1]) <= 0 or s1 == s2:
+            # don't add duplicates or null scores in the file
             scs.pop(0)
             continue
 
@@ -53,7 +79,6 @@ def merge_scores(scs):
 
     with open(app.config['SCORES'], 'w') as f:
         f.write(json.dumps(final_scores))
-
 
 @app.route("/")
 def index():
