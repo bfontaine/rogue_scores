@@ -1,13 +1,17 @@
 # -*- coding: UTF-8 -*-
 
+"""
+This module is used to get and parse local user scores.
+"""
+
 import re
 import subprocess
 
 def parse_line(l):
     """
-    Parse a line from the scores and return the score as a tuple containing the
-    user's name, score, and result. If the line wasn't correct, it returns
-    ``None``.
+    Parse a line from the scores given by Rogue and return a score as a tuple
+    containing the user's name, score, and result. If the line wasn't correct,
+    it returns ``None``.
 
     >>> parse_line(' 1   783 baptiste: killed on level 8 by a centaur.')
     ('baptiste', 783, 'killed on level 8 by a centaur.')
@@ -26,7 +30,13 @@ def parse_line(l):
 
 def get_scores(command='rogue'):
     """
-    Return an ordered list of local user scores
+    Return a list of local user scores, as given by the command ``rogue -s``.
+    These scores should be ordered from the best score to the worst one, and
+    limited to 10, but this limit is not enforced by the function.
+
+    Keyword arguments:
+            - ``command`` (``string``, default: ``rogue``): the command to use
+              to run ``rogue``.
     """
     try:
         p = subprocess.Popen([command, '-s'], stdout=subprocess.PIPE)

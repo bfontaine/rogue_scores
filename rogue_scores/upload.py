@@ -1,12 +1,17 @@
 # -*- coding: UTF-8 -*-
 
+"""
+This module provides tools to upload Rogue scores to a remote server.
+"""
+
 import json
 import requests
 
 def post_scores(scores, **kwargs):
     """
     Post some scores to a remote server and return a boolean depending on the
-    request's success. Optional keyword arguments are:
+    request's success. These scores should be a list of tuples, as returned by
+    ``rogue_scores.scores.get_scores``. Optional keyword arguments are:
 
     Keyword arguments:
             - ``protocol`` (``string``, default: ``http``)

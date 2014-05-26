@@ -1,7 +1,11 @@
 # -*- coding: UTF-8 -*-
 
 """
-Web server for ``rogue_scores``
+This is a Web server for an online Rogue leaderboard. This is a Flask
+application with a couple helpers to parse POST'ed scores.
+
+There's currently no limit on the number of scores to store, and these are
+stored in a local JSON file.
 """
 
 import os.path
@@ -11,7 +15,7 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 
 app.config['DEBUG'] = True
-app.config['SCORES'] = '_scores.txt'
+app.config['SCORES'] = '_scores.json'
 
 def init_scores():
     """
@@ -24,7 +28,7 @@ def init_scores():
 
 def sanitize_score(sc):
     """
-    Sanitize a score from an external source. Its argument should be a tuple of
+    Sanitize a score from an external source. The score should be a tuple of
     ``user``, ``score``, and ``text``.
     """
     u, s, t = sc[:3]
@@ -52,7 +56,8 @@ def merge_scores(scs):
     Merge local scores with the given ones, and save the new list in the local
     file. Duplicate scores (same user, score and text) are not preserved, and
     if a new score is the same than a previous one, the new one is taking
-    precedence over the former one.
+    precedence over the former one (i.e. it'll be the first in the
+    leaderboard).
     """
     scs = list(map(list, sanitize_scores(scs)))
     scs.sort(key=lambda s:s[1], reverse=True)
