@@ -19,7 +19,7 @@ from logging import FileHandler
 app = Flask(__name__)
 
 app.config['DEBUG'] = True
-app.config['SCORES'] = '_scores.json'
+app.config['SCORES'] = os.path.expanduser('~/.rogue-scores.json')
 
 app.logger.setLevel(logging.DEBUG)
 app.logger.addHandler(FileHandler('rogue_scores.log'))
