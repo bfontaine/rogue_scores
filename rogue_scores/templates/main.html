@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="language" content="en" />
+    <title>Rogue Scores</title>
+    <meta name="author" content="Baptiste Fontaine" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  </head>
+  <body class="app">
+    <div class="container">
+      <table class="table table-striped">
+        <tr><th>#</th><th>Score</th><th>User</th><th>Text</th></tr>
+        {% for s in scores %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ s.score }}</td>
+          <td>{{ s.user }}</td>
+          <td>{{ s.text }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </body>
+</html>

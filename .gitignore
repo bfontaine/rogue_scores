@@ -9,3 +9,4 @@ __pycache__
 /venv
 /dist
 /docs/_*
+_scores.txt

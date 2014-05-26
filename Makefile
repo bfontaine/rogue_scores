@@ -1,4 +1,8 @@
-SRC=ctrie
+SRC=rogue_scores
+BIN_TOOLS=venv/bin
+
+PIP=$(BIN_TOOLS)/pip
+PYTHON=$(BIN_TOOLS)/python
 
 COVERFILE:=.coverage
 COVERAGE_REPORT:=report -m
@@ -17,24 +21,25 @@ endif
 default: deps check-versions
 
 deps:
-	pip install -qr requirements.txt
+	virtualenv venv
+	$(PIP) install -qr requirements.txt
 ifeq ($(PY_VERSION_SHORT),2.6)
-	pip install -q unittest2
+	$(PIP) install -q unittest2
 endif
 ifneq ($(PY_VERSION_SHORT),3.3)
 ifneq ($(PY_VERSION_SHORT),3.4)
-	pip install -q wsgiref==0.1.2
+	$(PIP) install -q wsgiref==0.1.2
 endif
 endif
 
 check:
-	python tests/test.py
+	$(PYTHON) tests/test.py
 
 check-versions:
-	tox
+	$(BIN_TOOLS)/tox
 
 stylecheck:
-	pep8 $(SRC)
+	$(BIN_TOOLS)/pep8 $(SRC)
 
 covercheck:
 	coverage run --source=$(SRC) tests/test.py
@@ -47,7 +52,7 @@ clean:
 
 publish: stylecheck check-versions
 	cp README.rst README
-	python setup.py sdist upload
+	$(PYTHON) setup.py sdist upload
 	rm -f README
 
 docs:
