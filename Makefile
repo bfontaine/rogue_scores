@@ -20,8 +20,7 @@ endif
 
 default: deps check-versions
 
-deps:
-	virtualenv venv
+deps: venv
 	$(PIP) install -qr requirements.txt
 ifeq ($(PY_VERSION_SHORT),2.6)
 	$(PIP) install -q unittest2
@@ -31,6 +30,9 @@ ifneq ($(PY_VERSION_SHORT),3.4)
 	$(PIP) install -q wsgiref==0.1.2
 endif
 endif
+
+venv:
+	virtualenv $@
 
 check:
 	$(PYTHON) tests/test.py
