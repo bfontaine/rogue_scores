@@ -50,9 +50,11 @@ def sanitize_scores(scs):
 def merge_scores(scs):
     """
     Merge local scores with the given ones, and save the new list in the local
-    file.
+    file. Duplicate scores (same user, score and text) are not preserved, and
+    if a new score is the same than a previous one, the new one is taking
+    precedence over the former one.
     """
-    scs = sanitize_scores(scs)
+    scs = list(map(list, sanitize_scores(scs)))
     scs.sort(key=lambda s:s[1], reverse=True)
 
     init_scores()
