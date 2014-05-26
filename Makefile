@@ -42,8 +42,8 @@ stylecheck:
 	$(BIN_TOOLS)/pep8 $(SRC)
 
 covercheck:
-	coverage run --source=$(SRC) tests/test.py
-	coverage $(COVERAGE_REPORT)
+	$(BIN_TOOLS)/coverage run --source=$(SRC) tests/test.py
+	$(BIN_TOOLS)/coverage $(COVERAGE_REPORT)
 
 clean:
 	find . -name '*~' -delete
