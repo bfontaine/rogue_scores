@@ -28,7 +28,7 @@ setup(
     description='online Rogue scores leaderboard',
     long_description="""\
 rogue_scores bundles a Web server for an online Rogue scores leaderboard as \
-well as a Python script to upload local scores to the server"""
+well as a Python script to upload local scores to the server""",
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.6',
