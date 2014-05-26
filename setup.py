@@ -36,6 +36,9 @@ well as a Python script to upload local scores to the server""",
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
     ],
+    install_requires=[
+        'requests >= 2.3.0',
+    ],
     entry_points={
         'console_scripts':[
             'rogue_scores = rogue_scores.cli:run'
