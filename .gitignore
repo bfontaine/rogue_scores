@@ -1,9 +1,10 @@
 *~
 .*.sw*
 *.pyc
+*.egg-info
+*.log
 __pycache__
 .DS_Store
-*.egg-info
 .coverage
 .tox
 /venv

@@ -54,4 +54,5 @@ def run():
         print("Scores posted with success!")
     else:
         print("An error occurred.", file=sys.stderr)
+        print("I tried to send %d scores to '%s'." % (len(scs, server)))
         sys.exit(2)
