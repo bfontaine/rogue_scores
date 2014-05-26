@@ -22,6 +22,12 @@ rogue_scores.upload
 .. automodule:: rogue_scores.upload
     :members:
 
+rogue_scores.cli
+~~~~~~~~~~~~~~~~
+
+.. automodule:: rogue_scores.cli
+    :members:
+
 Server
 ------
 
