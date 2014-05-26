@@ -53,6 +53,7 @@ def merge_scores(scs):
     file.
     """
     scs = sanitize_scores(scs)
+    scs.sort(key=lambda s:s[1], reverse=True)
 
     init_scores()
     with open(app.config['SCORES'], 'r') as f:
