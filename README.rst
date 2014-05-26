@@ -35,4 +35,9 @@ Usage
 
 `Read the docs`_.
 
+This repository is Dokku-ready: just push it to your Dokku instance and it’ll
+run without anymore configuration. It won’t work on Heroku because it uses a
+local file to keep track of scores but that can be solved by using an external
+database or an S3 instance.
+
 .. _Read the docs: http://rogue-scores.readthedocs.org
