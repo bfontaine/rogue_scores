@@ -7,6 +7,7 @@ This module is used to get and parse local user scores.
 import re
 import subprocess
 
+
 def parse_line(l):
     """
     Parse a line from the scores given by Rogue and return a score as a tuple
@@ -27,6 +28,7 @@ def parse_line(l):
         return (parts[1], int(parts[0]), parts[2])
     except ValueError:
         return None
+
 
 def get_scores(command='rogue'):
     """

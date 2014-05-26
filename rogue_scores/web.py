@@ -17,6 +17,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SCORES'] = '_scores.json'
 
+
 def init_scores():
     """
     Initialize the local scores file
@@ -25,6 +26,7 @@ def init_scores():
     if not os.path.isfile(name):
         with open(name, 'w') as f:
             f.write(json.dumps([]))
+
 
 def sanitize_score(sc):
     """
@@ -44,12 +46,14 @@ def sanitize_score(sc):
     t = re.sub(r'[^\w\., ]+', '', str(t))[:80]
     return (u, s, t)
 
+
 def sanitize_scores(scs):
     """
     Sanitize scores from an external source, and filter out those with an empty
     username and a null score.
     """
-    return [s for s in map(sanitize_score, scs) if s[0] and s[1]>0]
+    return [s for s in map(sanitize_score, scs) if s[0] and s[1] > 0]
+
 
 def merge_scores(scs):
     """
@@ -60,7 +64,7 @@ def merge_scores(scs):
     leaderboard).
     """
     scs = list(map(list, sanitize_scores(scs)))
-    scs.sort(key=lambda s:s[1], reverse=True)
+    scs.sort(key=lambda s: s[1], reverse=True)
 
     init_scores()
     with open(app.config['SCORES'], 'r') as f:
@@ -90,13 +94,15 @@ def merge_scores(scs):
     with open(app.config['SCORES'], 'w') as f:
         f.write(json.dumps(final_scores))
 
+
 @app.route("/")
 def index():
     init_scores()
     with open(app.config['SCORES'], 'r') as f:
         s = json.loads(f.read())
-        s = [{'user':l[0], 'score':l[1], 'text':l[2]} for l in s]
+        s = [dict(zip(('user', 'score', 'text'), l)) for l in s]
         return render_template('main.html', scores=s)
+
 
 @app.route('/scores', methods=['POST'])
 def scores_upload():
@@ -106,4 +112,3 @@ def scores_upload():
         return 'wrong json'
     merge_scores(scores)
     return 'ok'
-

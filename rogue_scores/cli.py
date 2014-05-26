@@ -18,6 +18,7 @@ else:
 
 SERVER_FILE = os.path.expanduser('~/.rogue-scores-server')
 
+
 def set_server():
     """
     Ask the user for a server address and store it in a local file.

@@ -7,6 +7,7 @@ This module provides tools to upload Rogue scores to a remote server.
 import json
 import requests
 
+
 def post_scores(scores, **kwargs):
     """
     Post some scores to a remote server and return a boolean depending on the
