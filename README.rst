@@ -41,3 +41,16 @@ local file to keep track of scores but that can be solved by using an external
 database or an S3 instance.
 
 .. _Read the docs: http://rogue-scores.readthedocs.org
+
+Contributing
+------------
+
+All contributions are welcomed. Please open an issue_ describing the problem as
+well as your Python version and OS. If you can contribute code,
+`fork this repo`_ and run ``make deps`` to set up your local environment. Use
+``make check`` for simple tests and ``make check-versions`` for the full test
+suite. If you can, add a failing test showing the bug. Commit your changes and
+open a pull request on this repo.
+
+.. _issue: https://github.com/bfontaine/rogue_scores/issues
+.. _fork this repo: https://github.com/bfontaine/rogue_scores/fork
