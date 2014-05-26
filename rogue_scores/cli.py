@@ -31,7 +31,7 @@ def set_server():
 
     u = urlparse.urlparse(r.strip())
     with open(SERVER_FILE, 'w') as f:
-        f.write('%s\n' % u.netloc)
+        f.write('%s' % u.netloc)
 
 
 def run():
@@ -42,7 +42,7 @@ def run():
         set_server()
 
     with open(SERVER_FILE) as f:
-        server = f.readline()
+        server = f.readline().strip()
 
     scs = get_scores()
 
@@ -54,5 +54,5 @@ def run():
         print("Scores posted with success!")
     else:
         print("An error occurred.", file=sys.stderr)
-        print("I tried to send %d scores to '%s'." % (len(scs, server)))
+        print("I tried to send %d scores to '%s'." % (len(scs), server))
         sys.exit(2)
