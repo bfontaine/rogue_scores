@@ -9,4 +9,5 @@ __pycache__
 /venv
 /dist
 /docs/_*
+/htmlcov
 _scores.txt
