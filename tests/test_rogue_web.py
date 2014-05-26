@@ -93,7 +93,7 @@ class TestRogueWebScoresMerging(unittest.TestCase):
             ['foo', 41, 'qux'],
             ['foo', 41, 'qax'],
             ['moo', 25, 'qwe']
-        ]))
+        ]).encode('utf-8'))
         self.tmp.close()
 
     def tearDown(self):
@@ -158,7 +158,7 @@ class TestRogueWebRoutes(unittest.TestCase):
         self.tmp.write(json.dumps([
             ['foo', 42, 'bar'],
             ['moo', 25, 'qwe']
-        ]))
+        ]).encode('utf-8'))
         self.tmp.close()
 
     def tearDown(self):

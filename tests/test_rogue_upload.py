@@ -15,7 +15,7 @@ from rogue_scores.upload import post_scores
 @all_requests
 def server_mock_ok(url, req):
     if req.method == 'POST':
-        return 'ok'
+        return response(200, bytes('ok'.encode('utf-8')))
 
 @all_requests
 def server_mock_not_ok(url, req):
