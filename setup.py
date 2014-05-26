@@ -25,15 +25,15 @@ setup(
     packages=['rogue_scores'],
     url='https://github.com/bfontaine/rogue_scores',
     license=open('LICENSE', 'r').read(),
-    description='Rogue scores uploader',
+    description='online Rogue scores leaderboard',
     long_description="""\
-rogue_scores uploads your Rogue scores to a remote server""",
+rogue_scores bundles a Web server for an online Rogue scores leaderboard as \
+well as a Python script to upload local scores to the server"""
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        'Operating System :: OS Independent',
     ],
 )
