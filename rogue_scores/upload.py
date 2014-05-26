@@ -5,15 +5,23 @@ import requests
 
 def post_scores(scores, **kwargs):
     """
-    Post some scores to a remote server. Optional keyword arguments are:
+    Post some scores to a remote server and return a boolean depending on the
+    request's success. Optional keyword arguments are:
 
     Keyword arguments:
             - ``protocol`` (``string``, default: ``http``)
-            - ``target`` (``string``, default: ``localhost:5000/scores``)
+            - ``target`` (``string``, default: ``localhost:5000``)
     """
-    url = '%s://%s' % (kwargs.get('protocol', 'http'),
-                       kwargs.get('target', 'localhost:5000/scores'))
+    url = u'%s://%s/scores' % (kwargs.get('protocol', 'http'),
+                               kwargs.get('target', 'localhost:5000'))
 
     payload = {'scores': json.dumps(scores)}
-    r = requests.post(url, data=payload)
-    return r.text
+    try:
+        r = requests.post(url, data=payload)
+    except requests.exceptions.ConnectionError:
+        return False
+
+    try:
+        return r.status_code == 200 and r.text.strip() == 'ok'
+    except ValueError:
+        return False
