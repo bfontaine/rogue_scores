@@ -22,24 +22,26 @@ def init_scores():
         with open(name, 'w') as f:
             f.write(json.dumps([]))
 
+def sanitize_score(sc):
+    """
+    Sanitize a score from an external source
+    """
+    u, s, t = sc[:3]
+
+    try:
+        s = str(int(s))
+    except ValueError:
+        s = 0
+
+    u = re.sub(r'\W+', '', u.strip())[:40]
+    t = re.sub(r'[^\w\., ]+', '', t)[:80]
+    return (u, s, t)
+
 def sanitize_scores(scs):
     """
     Sanitize scores from an external source
     """
-    for i, e in enumerate(scs):
-        u, s, t = e[:3]
-        u = re.sub(r'\W+', '', u.strip())[:40]
-
-        try:
-            s = str(int(s))
-        except ValueError:
-            s = 0
-
-        t = re.sub(r'[^\w\., ]+', '', t)
-
-        scs[i] = (u, s, t)
-
-    return scs
+    return list(map(sanitize_score, scs))
 
 def merge_scores(scs):
     """
@@ -50,7 +52,7 @@ def merge_scores(scs):
     with open(app.config['SCORES'], 'r') as f:
         scores = json.loads(f.read())
 
-    scs = [map(str, s) for s in scs]
+    scs = [list(map(str, s)) for s in scs]
 
     final_scores = []
     while scores or scs:
