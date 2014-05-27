@@ -6,22 +6,34 @@
     <title>Rogue Scores</title>
     <meta name="author" content="Baptiste Fontaine" />
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <style>
+    .table td.num, .table th.num { text-align: right; padding-right: 14px; }
+    td.num { width: 12ex; }
+    </style>
   </head>
   <body class="app">
     <div class="container">
       <h1>Rogue Scores</h1>
 
       <table class="table table-striped">
-        <tr><th>#</th><th>Score</th><th>User</th><th>Text</th></tr>
+        <tr><th>#</th><th class="num">Score</th><th>User</th><th>Text</th></tr>
         {% for s in scores %}
         <tr>
           <td>{{ loop.index }}</td>
-          <td>{{ s.score }}</td>
+          <td class="num">{{ s.score }}</td>
           <td>{{ s.user }}</td>
           <td>{{ s.text }}</td>
         </tr>
         {% endfor %}
       </table>
+      {% if stats %}
+      <h2>Stats</h2>
+      <table class="table">
+        <tr><th>Most active player</th><td>{{ stats.most_active }}</td></tr>
+        <tr><th>Max level</th><td>{{ stats.max_level }}</td></tr>
+        <tr><th>Best killer</th><td>{{ stats.best_killer }}</td></tr>
+      </table>
+      {% endif %}
       <h2>Help</h2>
       <h3>Install Rogue</h3>
       <h4>On GNU/Linux</h4>
