@@ -37,11 +37,13 @@ def init_scores():
         dirname = os.path.dirname(name)
         if not os.path.exists(dirname):
             try:
+                app.logger.debug("Creating '%s'" % dirname)
                 os.makedirs(dirname)
-            except OSError:
-                pass
+            except OSError as e:
+                app.logger.error("Couldn't create '%s': e" % (dirname, e))
 
         with open(name, 'w') as f:
+            app.logger.debug("Intializing '%s'" % name)
             f.write(json.dumps([]))
 
 
@@ -109,6 +111,7 @@ def merge_scores(scs):
         final_scores.append(coll.pop(0))
 
     with open(app.config['SCORES'], 'w') as f:
+        app.logger.debug("Saving scores in '%s'" % app.config['SCORES'])
         f.write(json.dumps(final_scores))
 
 
