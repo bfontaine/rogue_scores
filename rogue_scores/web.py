@@ -43,7 +43,7 @@ def init_scores():
                 app.logger.error("Couldn't create '%s': e" % (dirname, e))
 
         with open(name, 'w') as f:
-            app.logger.debug("Intializing '%s'" % name)
+            app.logger.debug("Initializing '%s'" % name)
             f.write(json.dumps([]))
 
 
