@@ -11,4 +11,4 @@ __pycache__
 /dist
 /docs/_*
 /htmlcov
-_scores.txt
+_rogue-scores.json
