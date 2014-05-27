@@ -6,7 +6,8 @@ This is a Web server for an online Rogue leaderboard. This is a Flask
 application with a couple helpers to parse POST'ed scores.
 
 There's currently no limit on the number of scores to store, and these are
-stored in a local JSON file.
+stored in a local JSON file. You can set the directory used for this file (by
+default it's the current one) with ``ROGUE_SCORES_PATH``.
 """
 
 import os.path
@@ -19,7 +20,9 @@ from logging import FileHandler
 app = Flask(__name__)
 
 app.config['DEBUG'] = True
-app.config['SCORES'] = os.path.expanduser('~/.rogue-scores.json')
+
+app.config['SCORES'] = os.environ.get('ROGUE_SCORES_PATH', '.') \
+    + '/_rogue-scores.json'
 
 app.logger.setLevel(logging.DEBUG)
 app.logger.addHandler(FileHandler('rogue_scores.log'))
