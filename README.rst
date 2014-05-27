@@ -35,11 +35,9 @@ Usage
 
 `Read the docs`_.
 
-This repository is Dokku-ready: you just need to set ``PERSISTENT_STORAGE``'s
-content, set ``ROGUE_SCORES_PATH`` on the instance and push it and it’ll run
-without anymore configuration. It won’t work on Heroku because it uses a local
-file to keep track of scores but that can be solved by using an external
-database or an S3 instance.
+This repository is Dokku-ready: you just need to set up persistent storage to
+not lose scores between deployments and it should run without anymore
+configuration.
 
 If you just want the upload script, install the package and run it: ::
 
