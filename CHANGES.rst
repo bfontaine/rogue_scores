@@ -1,3 +1,9 @@
+v0.0.5 (27/05/2014)
+-------------------
+
+- ``http[s]`` is not mandatory anymore when entering the remote server
+- help text added on the Web index page
+
 v0.0.4 (26/05/2014)
 -------------------
 
