@@ -5,6 +5,7 @@ import os.path
 import json
 import platform
 import tempfile
+import logging
 
 if platform.python_version() < '2.7':
     import unittest2 as unittest
@@ -21,6 +22,7 @@ class FakeRequest(object):
     def __init__(self, *args, **kwargs):
         self.form = {'scores': FakeRequest.scores}
 
+rogue_scores.web.app.logger.handlers = [logging.FileHandler('/dev/null')]
 
 class TestRogueWeb(unittest.TestCase):
 
