@@ -41,6 +41,12 @@ without anymore configuration. It won’t work on Heroku because it uses a local
 file to keep track of scores but that can be solved by using an external
 database or an S3 instance.
 
+If you just want the upload script, install the package and run it: ::
+
+    rogue_scores
+
+It’ll ask you which server to use the first time, and remember it.
+
 .. _Read the docs: http://rogue-scores.readthedocs.org
 
 Contributing
