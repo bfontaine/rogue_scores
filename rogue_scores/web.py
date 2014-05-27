@@ -117,7 +117,7 @@ def index():
     init_scores()
     hostname = request.headers.get('Host')
     with open(app.config['SCORES'], 'r') as f:
-        s = json.loads(f.read())
+        s = json.loads(f.read())[:20]  # display only the first 20 scores
         s = [dict(zip(('user', 'score', 'text'), l)) for l in s]
         return render_template('main.html', scores=s, hostname=hostname)
 
