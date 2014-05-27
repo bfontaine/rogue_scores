@@ -39,12 +39,31 @@ class TestRogueWeb(unittest.TestCase):
 
     # == .init_scores == #
 
-    def test_init_scores(self):
+    def test_init_scores_with_dir_without_file(self):
         os.unlink(self.tmp.name)
         self.assertFalse(os.path.isfile(self.tmp.name))
         init_scores()
         self.assertTrue(os.path.isfile(self.tmp.name))
         with open(self.tmp.name) as f:
+            self.assertEquals('[]', f.read())
+
+    def test_init_scores_with_dir_with_file(self):
+        s = 's$@%r9'
+        with open(self.tmp.name, 'w') as f:
+            f.write(s)
+        init_scores()
+        with open(self.tmp.name) as f:
+            self.assertEquals(s, f.read())
+
+    def test_init_scores_without_dir(self):
+        path = tempfile.mkdtemp()
+        os.rmdir(path)
+        self.assertFalse(os.path.exists(path))
+        rogue_scores.web.app.config['SCORES'] = name = '%s/scores' % path
+        init_scores()
+        self.assertTrue(os.path.isdir(path))
+        self.assertTrue(os.path.isfile(name))
+        with open(name) as f:
             self.assertEquals('[]', f.read())
 
     # == .sanitize_score == #
