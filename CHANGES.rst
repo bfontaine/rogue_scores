@@ -1,3 +1,9 @@
+v0.0.6 (27/05/2014)
+-------------------
+
+- ``ROGUE_SCORES_PATH`` support
+- the default Web scores file location is now the current directory
+
 v0.0.5 (27/05/2014)
 -------------------
 
