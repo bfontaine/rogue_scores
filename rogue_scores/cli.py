@@ -29,6 +29,10 @@ def set_server():
     else:
         r = input(prompt)
 
+    r = r.strip()
+    if not r.startswith('http'):
+        r = 'http://' + r
+
     u = urlparse.urlparse(r.strip())
     with open(SERVER_FILE, 'w') as f:
         f.write('%s' % u.netloc)
