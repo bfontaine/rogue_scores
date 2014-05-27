@@ -21,6 +21,7 @@ class FakeRequest(object):
 
     def __init__(self, *args, **kwargs):
         self.form = {'scores': FakeRequest.scores}
+        self.headers = {}
 
 rogue_scores.web.app.logger.handlers = [logging.FileHandler('/dev/null')]
 
@@ -156,6 +157,7 @@ class TestRogueWebRoutes(unittest.TestCase):
         self._scores = rogue_scores.web.app.config['SCORES']
         self._req = rogue_scores.web.request
         self.tmp = tempfile.NamedTemporaryFile(delete=False)
+        rogue_scores.web.request = FakeRequest()
         rogue_scores.web.app.config['SCORES'] = self.tmp.name
         self.tmp.write(json.dumps([
             ['foo', 42, 'bar'],
