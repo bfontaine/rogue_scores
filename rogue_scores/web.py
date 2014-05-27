@@ -105,10 +105,11 @@ def merge_scores(scs):
 @app.route("/")
 def index():
     init_scores()
+    hostname = request.headers.get('Host')
     with open(app.config['SCORES'], 'r') as f:
         s = json.loads(f.read())
         s = [dict(zip(('user', 'score', 'text'), l)) for l in s]
-        return render_template('main.html', scores=s)
+        return render_template('main.html', scores=s, hostname=hostname)
 
 
 @app.route('/scores', methods=['POST'])

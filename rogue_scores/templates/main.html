@@ -9,7 +9,7 @@
   </head>
   <body class="app">
     <div class="container">
-      <h1>Rogue Scores</h2>
+      <h1>Rogue Scores</h1>
 
       <table class="table table-striped">
         <tr><th>#</th><th>Score</th><th>User</th><th>Text</th></tr>
@@ -22,6 +22,25 @@
         </tr>
         {% endfor %}
       </table>
+      <h2>Help</h2>
+      <h3>Install Rogue</h3>
+      <h4>On GNU/Linux</h4>
+      <pre><code>wget http://rogue.rogueforge.net/files/rogue5.4/rogue5.4.4-src.tar.gz
+tar xzf rogue5.4.4-src.tar.gz &amp;&amp; cd rogue5.4.4-src
+./configure --disable-debug --disable-dependency-tracking
+[sudo] make install</code></pre>
+      <h4>On OS X</h4>
+      <pre><code>brew install rogue
+mkdir -p /usr/local/var/rogue</code></pre>
+      <h3>Upload your scores</h3>
+      <p>To upload your scores, install the local script:</p>
+      <pre><code>pip install rogue_scores</code></pre>
+      <p>and run it:</p>
+      <pre><code>rogue_scores</code></pre>
+      <p>It’ll ask you which server to use the first time, enter
+         <code>{{ hostname }}</code>. You can then run it periodically to
+         update your scores.</p>
+
     </div>
   </body>
 </html>
