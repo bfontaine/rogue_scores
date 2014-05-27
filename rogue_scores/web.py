@@ -17,6 +17,8 @@ import logging
 from flask import Flask, render_template, request
 from logging import FileHandler
 
+import stats
+
 app = Flask(__name__)
 
 app.config['DEBUG'] = True
@@ -120,9 +122,12 @@ def index():
     init_scores()
     hostname = request.headers.get('Host')
     with open(app.config['SCORES'], 'r') as f:
-        s = json.loads(f.read())[:20]  # display only the first 20 scores
-        s = [dict(zip(('user', 'score', 'text'), l)) for l in s]
-        return render_template('main.html', scores=s, hostname=hostname)
+        s_all = json.loads(f.read())
+        # display only the first 20 scores
+        s = [dict(zip(('user', 'score', 'text'), l)) for l in s_all[:20]]
+        return render_template('main.html', scores=s,
+                               hostname=hostname,
+                               stats=stats.stats(s_all))
 
 
 @app.route('/scores', methods=['POST'])

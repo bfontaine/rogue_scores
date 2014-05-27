@@ -36,3 +36,9 @@ rogue_scores.web
 
 .. automodule:: rogue_scores.web
     :members:
+
+rogue_scores.stats
+~~~~~~~~~~~~~~~~~~
+
+.. automodule:: rogue_scores.stats
+    :members:
