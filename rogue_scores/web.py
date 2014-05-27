@@ -34,6 +34,13 @@ def init_scores():
     """
     name = app.config['SCORES']
     if not os.path.isfile(name):
+        dirname = os.path.dirname(name)
+        if not os.path.exists(dirname):
+            try:
+                os.makedirs(dirname)
+            except OSError:
+                pass
+
         with open(name, 'w') as f:
             f.write(json.dumps([]))
 
