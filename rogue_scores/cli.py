@@ -30,6 +30,11 @@ def set_server():
         r = input(prompt)
 
     r = r.strip()
+
+    if not r:
+        print('You must provide a remote server address!')
+        return set_server()
+
     if not r.startswith('http'):
         r = 'http://' + r
 
@@ -52,8 +57,10 @@ def run():
 
     if not scs:
         print("There're no scores to send.", file=sys.stderr)
-        sys.exit(1)
+        # this 'return' is here for tests where sys.exit is a mock
+        return sys.exit(1)
 
+    print("scs:", scs)
     if post_scores(scs, target=server):
         print("Scores posted with success!")
     else:
