@@ -1,3 +1,8 @@
+v0.0.7 (in development)
+-----------------------
+
+- more log messages on the server side
+
 v0.0.6 (27/05/2014)
 -------------------
 
