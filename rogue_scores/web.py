@@ -14,7 +14,7 @@ import os.path
 import re
 import json
 import logging
-from flask import Flask, render_template, request
+from flask import Flask, Response, render_template, request
 from logging import FileHandler
 
 import stats
@@ -141,3 +141,8 @@ def scores_upload():
     app.logger.debug("Got some JSON")
     merge_scores(scores)
     return 'ok'
+
+@app.route('/scores', methods=['GET'])
+def scores_json():
+    with open(app.config['SCORES']) as f:
+        return Response(f.read(), 200, mimetype='application/json')
