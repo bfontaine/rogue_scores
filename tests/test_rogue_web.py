@@ -14,7 +14,7 @@ else:
 
 import rogue_scores.web
 from rogue_scores.web import init_scores, sanitize_score, \
-        sanitize_scores, merge_scores, index, scores_upload
+        sanitize_scores, merge_scores, index, scores_upload, scores_json
 
 class FakeRequest(object):
     scores = '[]'
@@ -178,10 +178,11 @@ class TestRogueWebRoutes(unittest.TestCase):
         self.tmp = tempfile.NamedTemporaryFile(delete=False)
         rogue_scores.web.request = FakeRequest()
         rogue_scores.web.app.config['SCORES'] = self.tmp.name
-        self.tmp.write(json.dumps([
+        self.json = json.dumps([
             ['foo', 42, 'bar'],
             ['moo', 25, 'qwe']
-        ]).encode('utf-8'))
+        ]).encode('utf-8')
+        self.tmp.write(self.json)
         self.tmp.close()
 
     def tearDown(self):
@@ -226,3 +227,11 @@ class TestRogueWebRoutes(unittest.TestCase):
         self.assertEquals('ok', ret)
         self.assertSequenceEqual(('myname', 455, 'killed'),
                                  self.getScores()[0])
+
+
+    # == .scores_json == #
+
+    def test_scores_json(self):
+        with rogue_scores.web.app.app_context():
+            resp = scores_json()
+        self.assertEquals(self.json, resp.data)
