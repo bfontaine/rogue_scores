@@ -8,6 +8,52 @@ import os.path
 import re
 import json
 
+class Score(object):
+    __slots__ = ['user', 'score', 'level', 'text']
+
+    def __init__(self, **kwargs):
+        self.user  = attrs.get('user')
+        self.score = attrs.get('score', 0)
+        self.level = attrs.get('level', 0)
+        self.text  = attrs.get('text')
+
+    def __int__(self):
+        return self.level
+
+    def __eq__(self, other):
+        return isinstance(other, Score) and self.json() == other.json()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __le__(self, other):
+        return self.score.__le__(int(other))
+
+    def __lt__(self, other):
+        return self.score.__lt__(int(other))
+
+    def __ge__(self, other):
+        return self.score.__ge__(int(other))
+
+    def __gt__(self, other):
+        return self.score.__gt__(int(other))
+
+    def json(self):
+        return json.dumps({
+            'user': self.user,
+            'score': self.score,
+            'level': self.level,
+            'text': self.text,
+        })
+
+    def dump(self):
+        return self.json()
+
+    def load(data):
+        ls = json.loads(data)
+        return list(map(Score, ls))
+
+
 def init_scores(name):
     """
     Initialize the local scores file
@@ -60,7 +106,7 @@ def merge_scores(scs, fname):
 
     init_scores(fname)
     with open(fname, 'r') as f:
-        scores = json.loads(f.read())
+        scores = Score.load(f.read())
 
     final_scores = []
     while scores or scs:
@@ -84,4 +130,4 @@ def merge_scores(scs, fname):
         final_scores.append(coll.pop(0))
 
     with open(fname, 'w') as f:
-        f.write(json.dumps(final_scores))
+        f.write(json.dumps(list(map(lambda s: s.dump(), final_scores))))
