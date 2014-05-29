@@ -33,6 +33,12 @@ rogue_scores.web.app
 .. automodule:: rogue_scores.web.app
     :members:
 
+rogue_scores.web.store
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: rogue_scores.web.store
+    :members:
+
 rogue_scores.web.stats
 ~~~~~~~~~~~~~~~~~~~~~~
 

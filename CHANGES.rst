@@ -4,6 +4,7 @@ v0.0.7 (in development)
 - more log messages on the server side
 - stats added on the Web page
 - ``/scores`` now serves the JSON scores file
+- scores-related functions moved from ``web`` to ``web.store``
 - ``rogue_scores.web`` moved to ``rogue_scores.web.app``
 
 v0.0.6 (27/05/2014)
