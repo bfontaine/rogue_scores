@@ -12,8 +12,8 @@ if platform.python_version() < '2.7':
 else:
     import unittest
 
-import rogue_scores.web
-from rogue_scores.web import init_scores, sanitize_score, \
+from rogue_scores.web import app
+from rogue_scores.web.app import init_scores, sanitize_score, \
         sanitize_scores, merge_scores, index, scores_upload, scores_json
 
 class FakeRequest(object):
@@ -23,17 +23,17 @@ class FakeRequest(object):
         self.form = {'scores': FakeRequest.scores}
         self.headers = {}
 
-rogue_scores.web.app.logger.handlers = [logging.FileHandler('/dev/null')]
+app.app.logger.handlers = [logging.FileHandler('/dev/null')]
 
 class TestRogueWeb(unittest.TestCase):
 
     def setUp(self):
-        self._scores = rogue_scores.web.app.config['SCORES']
+        self._scores = app.app.config['SCORES']
         self.tmp = tempfile.NamedTemporaryFile(delete=False)
-        rogue_scores.web.app.config['SCORES'] = self.tmp.name
+        app.app.config['SCORES'] = self.tmp.name
 
     def tearDown(self):
-        rogue_scores.web.app.config['SCORES'] = self._scores
+        app.app.config['SCORES'] = self._scores
         if os.path.isfile(self.tmp.name):
             os.unlink(self.tmp.name)
 
@@ -59,7 +59,7 @@ class TestRogueWeb(unittest.TestCase):
         path = tempfile.mkdtemp()
         os.rmdir(path)
         self.assertFalse(os.path.exists(path))
-        rogue_scores.web.app.config['SCORES'] = name = '%s/scores' % path
+        app.app.config['SCORES'] = name = '%s/scores' % path
         init_scores()
         self.assertTrue(os.path.isdir(path))
         self.assertTrue(os.path.isfile(name))
@@ -107,9 +107,9 @@ class TestRogueWeb(unittest.TestCase):
 class TestRogueWebScoresMerging(unittest.TestCase):
 
     def setUp(self):
-        self._scores = rogue_scores.web.app.config['SCORES']
+        self._scores = app.app.config['SCORES']
         self.tmp = tempfile.NamedTemporaryFile(delete=False)
-        rogue_scores.web.app.config['SCORES'] = self.tmp.name
+        app.app.config['SCORES'] = self.tmp.name
         self.tmp.write(json.dumps([
             ['foo', 42, 'bar'],
             ['foo', 41, 'qux'],
@@ -119,7 +119,7 @@ class TestRogueWebScoresMerging(unittest.TestCase):
         self.tmp.close()
 
     def tearDown(self):
-        rogue_scores.web.app.config['SCORES'] = self._scores
+        app.app.config['SCORES'] = self._scores
         if os.path.isfile(self.tmp.name):
             os.unlink(self.tmp.name)
 
@@ -173,11 +173,11 @@ class TestRogueWebScoresMerging(unittest.TestCase):
 class TestRogueWebRoutes(unittest.TestCase):
 
     def setUp(self):
-        self._scores = rogue_scores.web.app.config['SCORES']
-        self._req = rogue_scores.web.request
+        self._scores = app.app.config['SCORES']
+        self._req = app.request
         self.tmp = tempfile.NamedTemporaryFile(delete=False)
-        rogue_scores.web.request = FakeRequest()
-        rogue_scores.web.app.config['SCORES'] = self.tmp.name
+        app.request = FakeRequest()
+        app.app.config['SCORES'] = self.tmp.name
         self.json = json.dumps([
             ['foo', 42, 'bar'],
             ['moo', 25, 'qwe']
@@ -186,8 +186,8 @@ class TestRogueWebRoutes(unittest.TestCase):
         self.tmp.close()
 
     def tearDown(self):
-        rogue_scores.web.app.config['SCORES'] = self._scores
-        rogue_scores.web.request = self._req
+        app.app.config['SCORES'] = self._scores
+        app.request = self._req
         if os.path.isfile(self.tmp.name):
             os.unlink(self.tmp.name)
 
@@ -199,7 +199,7 @@ class TestRogueWebRoutes(unittest.TestCase):
 
     def test_index_no_score(self):
         os.unlink(self.tmp.name)
-        with rogue_scores.web.app.app_context():
+        with app.app.app_context():
             ret = index()
         self.assertRegexpMatches(ret, r'</th>\s*</tr>\s*</table>')
 
@@ -207,22 +207,22 @@ class TestRogueWebRoutes(unittest.TestCase):
 
     def test_scores_upload_wrong_json(self):
         FakeRequest.scores = '}w$'
-        rogue_scores.web.request = FakeRequest()
-        with rogue_scores.web.app.app_context():
+        app.request = FakeRequest()
+        with app.app.app_context():
             ret = scores_upload()
         self.assertEquals('wrong json', ret)
 
     def test_scores_upload_no_scores(self):
         FakeRequest.scores = '[]'
-        rogue_scores.web.request = FakeRequest()
-        with rogue_scores.web.app.app_context():
+        app.request = FakeRequest()
+        with app.app.app_context():
             ret = scores_upload()
         self.assertEquals('ok', ret)
 
     def test_scores_upload_new_scores(self):
         FakeRequest.scores = '[["myname", 455, "killed"]]'
-        rogue_scores.web.request = FakeRequest()
-        with rogue_scores.web.app.app_context():
+        app.request = FakeRequest()
+        with app.app.app_context():
             ret = scores_upload()
         self.assertEquals('ok', ret)
         self.assertSequenceEqual(('myname', 455, 'killed'),
@@ -232,6 +232,6 @@ class TestRogueWebRoutes(unittest.TestCase):
     # == .scores_json == #
 
     def test_scores_json(self):
-        with rogue_scores.web.app.app_context():
+        with app.app.app_context():
             resp = scores_json()
         self.assertEquals(self.json, resp.data)

@@ -1,1 +1,1 @@
-web: gunicorn rogue_scores.web:app
+web: gunicorn rogue_scores.web.app:app

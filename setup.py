@@ -44,4 +44,7 @@ well as a Python script to upload local scores to the server""",
             'rogue_scores = rogue_scores.cli:run'
         ]
     },
+    package_data={
+        'rogue_scores': ['web/templates/*.html'],
+    },
 )

@@ -8,7 +8,7 @@ if platform.python_version() < '2.7':
 else:
     import unittest
 
-from rogue_scores.stats import parse_score, stats
+from rogue_scores.web.stats import parse_score, stats
 
 class TestRogueScoresStats(unittest.TestCase):
 

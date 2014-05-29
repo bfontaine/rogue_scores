@@ -17,7 +17,7 @@ import logging
 from flask import Flask, Response, render_template, request
 from logging import FileHandler
 
-import stats
+from . import stats
 
 app = Flask(__name__)
 
