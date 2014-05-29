@@ -52,9 +52,8 @@ def merge_scores(scs, fname):
     """
     Merge local scores with the given ones, and save the new list in the local
     file. Duplicate scores (same user, score and text) are not preserved, and
-    if a new score is the same than a previous one, the new one is taking
-    precedence over the former one (i.e. it'll be the first in the
-    leaderboard).
+    if a new score is the same than a previous one, the previous one is taking
+    precedence over the new one (i.e. it'll be the first in the leaderboard).
     """
     scs = list(map(list, sanitize_scores(scs)))
     scs.sort(key=lambda s: s[1], reverse=True)
@@ -81,7 +80,7 @@ def merge_scores(scs, fname):
             scs.pop(0)
             continue
 
-        coll = scores if s1[1] > s2[1] else scs
+        coll = scores if s1[1] >= s2[1] else scs
         final_scores.append(coll.pop(0))
 
     with open(fname, 'w') as f:

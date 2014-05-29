@@ -148,8 +148,8 @@ class TestRogueWebScoresMerging(unittest.TestCase):
         initial = self.getScores()
         merge_scores([('foo', 42, 'barz')], self.scores)
         scs = self.getScores()
-        self.assertSequenceEqual(['foo', 42, 'barz'], scs[0])
-        self.assertSequenceEqual(['foo', 42, 'bar'], scs[1])
+        self.assertSequenceEqual(['foo', 42, 'bar'], scs[0])
+        self.assertSequenceEqual(['foo', 42, 'barz'], scs[1])
 
     def test_merge_scores(self):
         initial = self.getScores()
