@@ -9,42 +9,18 @@ import re
 import json
 
 class Score(object):
-    __slots__ = ['user', 'score', 'level', 'text']
-
     def __init__(self, **kwargs):
-        self.user  = attrs.get('user')
-        self.score = attrs.get('score', 0)
-        self.level = attrs.get('level', 0)
-        self.text  = attrs.get('text')
+        self.level = self.score = 0
+        self.user = self.cause = self.monster = None
+        self.__dict__.update(kwargs)
 
     def __int__(self):
         return self.level
 
-    def __eq__(self, other):
-        return isinstance(other, Score) and self.json() == other.json()
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __le__(self, other):
-        return self.score.__le__(int(other))
-
-    def __lt__(self, other):
-        return self.score.__lt__(int(other))
-
-    def __ge__(self, other):
-        return self.score.__ge__(int(other))
-
-    def __gt__(self, other):
-        return self.score.__gt__(int(other))
+    def __eq__(self):
 
     def json(self):
-        return json.dumps({
-            'user': self.user,
-            'score': self.score,
-            'level': self.level,
-            'text': self.text,
-        })
+        return json.dumps(self.__dict__)
 
     def dump(self):
         return self.json()
@@ -54,80 +30,97 @@ class Score(object):
         return list(map(Score, ls))
 
 
-def init_scores(name):
+class ScoresStore(object):
     """
-    Initialize the local scores file
+    A scores store
     """
-    if not os.path.isfile(name):
-        dirname = os.path.dirname(name)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
+    __slots__ = ['path', 'scores', 'saved']
 
-        with open(name, 'w') as f:
-            f.write(json.dumps([]))
+    def __init__(self, path, **kwargs):
+        """
+        Create a new store in the given file path. The file is created if it
+        doesn't exist.
+        """
+        self.path = path
+        self.scores = []
+        self.saved = True
+        if not os.path.isfile(self.path):
+            dirname = os.path.dirname(self.path)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
 
+            with open(self.path, 'w') as f:
+                f.write(json.dumps(self.scores))
+        else:
+            self.scores = json.loads(self.path)
 
-def sanitize_score(sc):
-    """
-    Sanitize a score from an external source. The score should be a tuple of
-    ``user``, ``score``, and ``text``.
-    """
-    u, s, t = sc[:3]
+    def save(self):
+        """
+        Save the current scores
+        """
+        self.saved = True
+        with open(self.path, 'w') as f:
+            f.write(json.dumps(self.scores))
 
-    try:
-        s = int(s)
-    except ValueError:
-        s = 0
-    except TypeError:
-        s = 0
+    def _insert(self, s):
+        """
+        Insert a score.
+        """
+        # TODO: we need to insert at the right place, and return False if
+        # the score is already there
 
-    u = re.sub(r'\W+', '', str(u).strip())[:40]
-    t = re.sub(r'[^\w\., ]+', '', str(t))[:80]
-    return (u, s, t)
+        idx = 1
+        for i,s1 in enumerate(self.scores):
+            idx = i+1
+            if s1.score < s.score:
+                break
 
+        self.scores.insert(idx, s)
+        self.saved = False
 
-def sanitize_scores(scs):
-    """
-    Sanitize scores from an external source, and filter out those with an empty
-    username and a null score.
-    """
-    return [s for s in map(sanitize_score, scs) if s[0] and s[1] > 0]
+    def _add(self, s, **attrs):
+        """
+        Add a score. This is an internal function, use ``add`` instead. It
+        returns ``True`` if the score has been added, ``False`` instead.
+        """
+        attrs.update(dict(s))
 
+        if 'cause' not in attrs and 'text' in attrs:
+            attrs['status'], attrs['level'], attrs['cause'] = \
+                parse_text(attrs['text'])
 
-def merge_scores(scs, fname):
-    """
-    Merge local scores with the given ones, and save the new list in the local
-    file. Duplicate scores (same user, score and text) are not preserved, and
-    if a new score is the same than a previous one, the previous one is taking
-    precedence over the new one (i.e. it'll be the first in the leaderboard).
-    """
-    scs = list(map(list, sanitize_scores(scs)))
-    scs.sort(key=lambda s: s[1], reverse=True)
+        # sanitize the score & level
+        try:
+            attrs['score'] = int(attrs.get('score', 0))
+            attrs['level'] = int(attrs.get('level', 0))
+        except:
+            return False
 
-    init_scores(fname)
-    with open(fname, 'r') as f:
-        scores = Score.load(f.read())
+        if attrs['score'] <= 0 or attrs['level'] <= 0:
+            return False
 
-    final_scores = []
-    while scores or scs:
-        if not scores:
-            final_scores += scs
-            break
+        # sanitize username, status, cause, monster
+        user = re.sub(r'\W+', '', attrs['user'])
+        for s in ('status', 'cause', 'monster'):
+            if attrs[s] is not None:
+                attrs[s] = re.sub(r'[^a-z]+', '', str(attrs[s]))
 
-        if not scs:
-            final_scores += scores
-            break
+        return self._insert(Score(**attrs))
 
-        s1 = scores[0]
-        s2 = scs[0]
+    def add(self, *scs, **kwargs):
+        """
+        Add one or more scores to the store. These are sanitized before
+        insertion, and missing informations are added via parsing if possible.
+        It returns the number of inserted items
+        """
+        ct = 0
+        for s in scs:
+            if self._add(s, **kwargs):
+                ct += 1
 
-        if s1 == s2:
-            # don't add duplicates in the file
-            scs.pop(0)
-            continue
+        return ct
 
-        coll = scores if s1[1] >= s2[1] else scs
-        final_scores.append(coll.pop(0))
+    def __del__(self):
+        if not self.saved:
+            self.save()
 
-    with open(fname, 'w') as f:
-        f.write(json.dumps(list(map(lambda s: s.dump(), final_scores))))
