@@ -55,4 +55,7 @@ def scores_upload():
 @app.route('/scores', methods=['GET'])
 def scores_json():
     with open(app.config['SCORES']) as f:
-        return Response(f.read(), 200, mimetype='application/json')
+        txt = f.read()
+        if 'pretty' in request.args:
+            txt = json.dumps(json.loads(txt), indent=4)
+        return Response(txt, 200, mimetype='application/json')

@@ -21,6 +21,7 @@ class FakeRequest(object):
     def __init__(self, *args, **kwargs):
         self.form = {'scores': FakeRequest.scores}
         self.headers = {}
+        self.args = {}
 
 app.app.logger.handlers = [logging.FileHandler('/dev/null')]
 
@@ -85,6 +86,12 @@ class TestRogueWeb(unittest.TestCase):
     # == .scores_json == #
 
     def test_scores_json(self):
+        with app.app.app_context():
+            resp = scores_json()
+        self.assertEquals(self.json, resp.data)
+
+    def test_scores_pretty_json(self):
+        FakeRequest.args = { 'pretty': None }
         with app.app.app_context():
             resp = scores_json()
         self.assertEquals(self.json, resp.data)
