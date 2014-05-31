@@ -208,9 +208,9 @@ class ScoresStore(object):
                 self.scores.insert(i, s)
                 break
         else:
-            self.saved = False
             self.scores.append(s)
-            return True
+        self.saved = False
+        return True
 
     def _add(self, s, **attrs):
         """
