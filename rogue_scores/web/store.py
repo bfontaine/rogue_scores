@@ -1,7 +1,16 @@
 # -*- coding: UTF-8 -*-
 
 """
-This modules provides functions to deal with scores stored on the Web server
+This modules provides functions to deal with scores stored on the Web server.
+Each score is represented as a dict-like object, with the following keys:
+    - ``level``
+    - ``score``
+    - ``user``: user's name
+    - ``cause``: the monster's name if the user was killed, the death cause if
+      the user died of starvation or hypothermia
+    - ``status`` (``str``): ``died``, ``killed``, ``quit``
+These keys can be ``None`` (or ``0`` for numerical ones) if the attribute is
+not set.
 """
 
 import os.path
@@ -10,15 +19,43 @@ import json
 
 def parse_text(text):
     """
-    Parse a score's text and return a dictionnary
+    Parse a score's text and return a dictionnary of attributes: ``level``,
+    ``status``, ``cause``. Only a subset of these attributes might be returned
+    if the text couldn't be parsed or some of them aren't relevant.
     """
-    # TODO
+    text = text.strip().lower()
+    attrs = {}
+    m = re.match(r'.* on level (\d+).*', text)
+    if m:
+        attrs['level'] = int(m.groups(1)[0])
 
-    # ^killed, ^died, ^quit
-    # on level (\d+)
-    # of ([a-z]+), by an? ([a-z]+), by ([a-z]+)
+    if text.startswith('quit'):
+        attrs['status'] = 'quit'
+        return attrs
 
-    return {}
+    m = re.match(r'died of ([a-z]+).*', text)
+    if m:
+        attrs['cause'] = m.groups(1)[0]
+        attrs['status'] = 'died'
+        return attrs
+
+    if text.startswith('killed '):
+        m = re.match('.* by an? ([a-z]+).*', text)
+        if m:
+            attrs['cause'] = m.groups(1)[0]
+            attrs['status'] = 'killed'
+            return attrs
+
+        m = re.match('.* by ([a-z]+).*', text)
+        if m:
+            attrs['cause'] = m.groups(1)[0]
+            attrs['status'] = 'died'
+            return attrs
+
+    if re.match('won .*', text):
+        attrs['status'] = 'won'
+
+    return attrs
 
 
 class Score(object):
@@ -26,9 +63,6 @@ class Score(object):
         self.level = self.score = 0
         self.user = self.cause = self.status = None
         self.__dict__.update(kwargs)
-
-    def json(self):
-        return json.dumps(self.__dict__)
 
     def dump(self):
         return self.json()
@@ -62,6 +96,11 @@ class Score(object):
     def __le__(self, o):
         return int(self) <= int(o)
 
+    def __getitem__(self, k):
+        return self.__dict__[k]
+
+    def __repr__(self):
+        return 'Score(%s)' % str(self.__dict__)
 
 class ScoresStore(object):
     """
@@ -69,7 +108,7 @@ class ScoresStore(object):
     """
     __slots__ = ['path', 'scores', 'saved']
 
-    def __init__(self, path, **kwargs):
+    def __init__(self, path=None, **kwargs):
         """
         Create a new store in the given file path. The file is created if it
         doesn't exist.
@@ -77,23 +116,48 @@ class ScoresStore(object):
         self.path = path
         self.scores = []
         self.saved = True
-        if not os.path.isfile(self.path):
+        if self.path and not os.path.isfile(self.path):
             dirname = os.path.dirname(self.path)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
 
-            with open(self.path, 'w') as f:
-                f.write(json.dumps(self.scores))
+            self.save()
         else:
-            self.scores = json.loads(self.path)
+            self._load()
+
+
+    def json(self, **kwargs):
+        """
+        Return a JSON representation of this store
+        """
+        return json.dumps(self.scores, default=lambda o: o.__dict__, **kwargs)
+
+    def _load(self):
+        """
+        Load the store from its path, if it has one
+        """
+        if not self.path:
+            return
+
+        with open(self.path) as f:
+            self.scores = json.loads(f.read())
+
+        # support for old format
+        if len(self.scores) > 0 and isinstance(self.scores[0], list):
+            self.scores, scs = [], self.scores
+            self.add(*scs)
+            self.save()
+        else:
+            self.scores = list(map(lambda d: Score(**d), self.scores))
 
     def save(self):
         """
         Save the current scores
         """
-        self.saved = True
-        with open(self.path, 'w') as f:
-            f.write(json.dumps(self.scores))
+        if self.path:
+            self.saved = True
+            with open(self.path, 'w') as f:
+                f.write(self.json())
 
     def _insert(self, s):
         """
@@ -128,13 +192,13 @@ class ScoresStore(object):
         except:
             return False
 
-        if attrs['score'] <= 0 or attrs['level'] <= 0:
+        if attrs['score'] <= 0 or attrs['level'] < 0:
             return False
 
         # sanitize username, status, cause, monster
         user = re.sub(r'\W+', '', attrs['user'])
         for s in ('status', 'cause', 'monster'):
-            if attrs[s] is not None:
+            if attrs.get(s) is not None:
                 attrs[s] = re.sub(r'[^a-z]+', '', str(attrs[s]))
 
         return self._insert(Score(**attrs))
@@ -147,15 +211,34 @@ class ScoresStore(object):
         """
         ct = 0
         for s in scs:
-            if isinstance(s, tule) or isinstance(s, list):
-                # old format
-                s = {'user': s[0], 'score': s[1], 'text': s[2]}
+            # old server format, and format sent by the upload script
+            if isinstance(s, tuple) or isinstance(s, list):
+                if len(s) == 3:
+                    s = {'user': s[0], 'score': s[1], 'text': s[2]}
+                else:
+                    raise Exception("unrecognized format: %s" % str(s))
 
             if self._add(s, **kwargs):
                 ct += 1
 
         return ct
 
+    def __iter__(self):
+        for s in self.scores:
+            yield s
+
+    def __getitem__(self, i):
+        return self.scores[i]
+
+    def __len__(self):
+        return len(self.scores)
+
     def __del__(self):
         if not self.saved:
             self.save()
+
+    def __empty__(self):
+        return not self.scores
+
+    def __repr__(self):
+        return 'ScoresStore(%s)' % str(list(self))

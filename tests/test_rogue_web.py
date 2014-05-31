@@ -33,8 +33,10 @@ class TestRogueWeb(unittest.TestCase):
         app.request = FakeRequest()
         app.app.config['SCORES'] = self.tmp.name
         self.json = json.dumps([
-            ['foo', 42, 'bar'],
-            ['moo', 25, 'qwe']
+            {'user': 'foo', 'level': 42, 'cause': 'bar',
+             'status': 'killed', 'score': 24},
+            {'user': 'moo', 'level': 25, 'cause': 'qwe',
+             'status': 'killed', 'score': 255}
         ]).encode('utf-8')
         self.tmp.write(self.json)
         self.tmp.close()
@@ -74,17 +76,19 @@ class TestRogueWeb(unittest.TestCase):
         self.assertEquals('ok', ret)
 
     def test_scores_upload_new_scores(self):
-        FakeRequest.scores = '[["myname", 455, "killed"]]'
+        FakeRequest.scores = '[["myname", 50, "killed by a foo on level 43"]]'
         app.request = FakeRequest()
         with app.app.app_context():
             ret = scores_upload()
         self.assertEquals('ok', ret)
-        self.assertSequenceEqual(('myname', 455, 'killed'),
-                                 self.getScores()[0])
+        d = {'user': 'myname', 'level': 43,
+             'status': 'killed', 'cause': 'foo', 'score': 50}
+        self.assertEquals(d, self.getScores()[0])
 
     # == .scores_json == #
 
     def test_scores_json(self):
         with app.app.app_context():
             resp = scores_json()
-        self.assertEquals(self.json, resp.data)
+        self.assertEquals(json.loads(self.json.decode('utf-8')),
+                          json.loads(resp.data.decode('utf-8')))

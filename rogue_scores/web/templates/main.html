@@ -16,13 +16,21 @@
       <h1>Rogue Scores</h1>
 
       <table class="table table-striped">
-        <tr><th>#</th><th class="num">Score</th><th>User</th><th>Text</th></tr>
+        <tr>
+          <th>#</th>
+          <th class="num">Score</th>
+          <th class="num">Level</th>
+          <th>User</th>
+          <th>Status</th>
+          <th>Cause</th></tr>
         {% for s in scores %}
         <tr>
           <td>{{ loop.index }}</td>
           <td class="num">{{ s.score }}</td>
+          <td class="num">{{ s.level }}</td>
           <td>{{ s.user }}</td>
-          <td>{{ s.text }}</td>
+          <td>{{ s.status }}</td>
+          <td>{{ s.cause|default('-') }}</td>
         </tr>
         {% endfor %}
       </table>
