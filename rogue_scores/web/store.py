@@ -219,6 +219,9 @@ class ScoresStore(object):
         """
         attrs.update(dict(s))
 
+        if 'user' not in attrs:
+            return False
+
         if 'cause' not in attrs and 'text' in attrs:
             attrs.update(parse_text(attrs['text']))
             del attrs['text']
@@ -251,6 +254,8 @@ class ScoresStore(object):
             - it doesn't contain basic info on the score, like no user or a
               null score
 
+        Keyword arguments can be used to set default values on all added
+        scores.
         """
         ct = 0
         for s in scs:
