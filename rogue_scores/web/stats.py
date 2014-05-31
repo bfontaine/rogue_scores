@@ -39,14 +39,10 @@ def stats(scores):
             maxlvl_user = '%d (%s)' % (maxlvl, s.user)
 
     s = {
-        'max_level': maxlvl_user
+        'max_level': maxlvl_user,
+        'most_active': \
+            '%s (%d games)' % tuple(max(users.items(), key=lambda p: p[1])),
     }
-
-    if users:
-        s['most_active'] = \
-            '%s (%d games)' % tuple(max(users.items(), key=lambda p: p[1]))
-    else:
-        s['most_active'] = '?'
 
     if killers:
         s['best_killer'] = \

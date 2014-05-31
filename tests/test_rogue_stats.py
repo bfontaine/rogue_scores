@@ -38,3 +38,16 @@ class TestRogueScoresStats(unittest.TestCase):
             'max_level': '32 (foo)',
             'best_killer': '?',
         }, stats(self.store))
+
+    def test_stats(self):
+        self.store.add({'user': 'foo', 'score': 17, 'cause': 'a',
+                        'status': 'killed', 'level': 21},
+                       {'user': 'bar', 'score': 25, 'cause': 'a',
+                        'status': 'killed', 'level': 32},
+                       {'user': 'bar', 'score': 3, 'cause': 'b',
+                        'status': 'killed', 'level': 2})
+        self.assertEquals({
+            'most_active': 'bar (2 games)',
+            'max_level': '32 (bar)',
+            'best_killer': 'a (2 kills)',
+        }, stats(self.store))
