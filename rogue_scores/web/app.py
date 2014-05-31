@@ -15,7 +15,8 @@ import logging
 from flask import Flask, Response, render_template, request
 from logging import FileHandler
 
-from . import stats, store
+from . import stats
+from .store import ScoresStore
 
 app = Flask(__name__)
 
@@ -29,16 +30,12 @@ app.logger.addHandler(FileHandler('rogue_scores.log'))
 
 @app.route("/")
 def index():
-    store.init_scores(app.config['SCORES'])
-    hostname = request.headers.get('Host')
-    with open(app.config['SCORES'], 'r') as f:
-        s_all = json.loads(f.read())
-        # display only the first 20 scores
-        s = [dict(zip(('user', 'score', 'text'), l)) for l in s_all[:20]]
-        return render_template('main.html', scores=s,
-                               hostname=hostname,
-                               stats=stats.stats(s_all))
-
+    store = ScoresStore(app.config['SCORES'])
+    return render_template('main.html',
+        scores=store,
+        hostname=request.headers.get('Host'),
+        stats=stats.stats(store)
+    )
 
 @app.route('/scores', methods=['POST'])
 def scores_upload():
@@ -49,13 +46,15 @@ def scores_upload():
         return 'wrong json'
 
     app.logger.debug("Got some JSON")
-    store.merge_scores(scores, app.config['SCORES'])
+    store = ScoresStore(app.config['SCORES'])
+    store.add(*scores)
+    store.save()
     return 'ok'
 
 @app.route('/scores', methods=['GET'])
 def scores_json():
-    with open(app.config['SCORES']) as f:
-        txt = f.read()
-        if 'pretty' in request.args:
-            txt = json.dumps(json.loads(txt), indent=4)
-        return Response(txt, 200, mimetype='application/json')
+    store = ScoresStore(app.config['SCORES'])
+    kwargs = {}
+    if 'pretty' in request.args:
+        kwargs['indent'] = 4
+    return Response(store.json(**kwargs), 200, mimetype='application/json')

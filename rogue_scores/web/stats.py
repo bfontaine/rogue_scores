@@ -8,29 +8,17 @@ Web server.
 import re
 from collections import defaultdict
 
-def parse_score(s):
-    """
-    parse a score and return a dict with the following keys: ``user``,
-    ``score``, ``level``, ``cause``.
-    """
-
-    m = re.match(r'.*on level (\d+)', s[2])
-    lvl = m.groups(1)[0] if m else 0
-
-    m = re.match(r'killed.*by a (\w+)\.', s[2])
-    cause = m.groups(1)[0] if m else None
-
-    return {
-        'user': s[0],
-        'score': s[1],
-        'cause': cause,
-        'level': int(lvl),
-    }
-
 def stats(scores):
     """
-    Compute stats on a list of scores, and return a dict that can then be used
-    in a template.
+    Compute stats on a ``ScoresStore``, and return a dict that can then be used
+    in a template. Each value is a string, and current keys are:
+
+        - ``max_level``: higher level, with the corresponding user
+        - ``most_active``: most games played by one user
+        - ``best_killer``: monster with the most kills
+
+    If multiple users or monsters match a criteria for one of these keys, only
+    one of them will be picked.
     """
     if not scores:
         return {}
@@ -41,21 +29,29 @@ def stats(scores):
     maxlvl_user = None
 
     for s in scores:
-        s = parse_score(s)
-        users[s['user'] or '?'] += 1
-        killers[s['cause'] or '?'] += 1
-        if s['level'] > maxlvl:
-            maxlvl = s['level']
-            maxlvl_user = '%d (%s)' % (maxlvl, s['user'])
+        users[s.user] += 1
 
-    most_active = max(users.items(), key=lambda p: p[1])
-    best_killer = max(killers.items(), key=lambda p: p[1])
+        if s.status == 'killed' and s.cause:
+            killers[s['cause']] += 1
+        if s.level > maxlvl:
+            maxlvl = s.level
+            maxlvl_user = '%d (%s)' % (maxlvl, s.user)
 
-    most_active = '%s (%d games)' % tuple(most_active)
-    best_killer = '%s (%d kills)' % tuple(best_killer)
-
-    return {
-        'most_active': most_active,
-        'max_level': maxlvl_user,
-        'best_killer': best_killer,
+    s = {
+        'max_level': maxlvl_user
     }
+
+    if users:
+        s['most_active'] = \
+            '%s (%d games)' % tuple(max(users.items(), key=lambda p: p[1]))
+    else:
+        s['most_active'] = '?'
+
+    if killers:
+        s['best_killer'] = \
+            '%s (%d kills)' % tuple(max(killers.items(), key=lambda p: p[1]))
+    else:
+        s['best_killer'] = '?'
+
+
+    return s
