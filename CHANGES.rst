@@ -5,6 +5,7 @@ This version concerns only the upload script.
 
 - support for ``ROGUE_SCORES_SERVER``
 - ``--version`` flag support
+- redirections are now followed
 
 v0.0.8 (31/05/2014)
 -------------------

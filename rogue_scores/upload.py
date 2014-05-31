@@ -23,7 +23,7 @@ def post_scores(scores, **kwargs):
 
     payload = {'scores': json.dumps(scores)}
     try:
-        r = requests.post(url, data=payload)
+        r = requests.post(url, data=payload, allow_redirects=True)
     except requests.exceptions.ConnectionError:
         return False
 
