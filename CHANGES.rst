@@ -1,7 +1,10 @@
 v0.0.9 (in development)
 -----------------------
 
+This version concerns only the upload script.
+
 - support for `ROGUE_SCORES_SERVER`
+- ``--version`` flag support
 
 v0.0.8 (31/05/2014)
 -------------------

@@ -16,6 +16,7 @@ if platform.python_version() < '2.7':
 else:
     import unittest
 
+import rogue_scores
 import rogue_scores.cli
 from rogue_scores.cli import run, set_server
 
@@ -156,3 +157,12 @@ class TestRogueCLI(unittest.TestCase):
         self.assertSequenceEqual([scs], self._post_args)
         self.assertEquals({'target':srv}, self._post_kwargs)
         del rogue_scores.cli.os.environ['ROGUE_SCORES_SERVER']
+
+    def test_cli_run_version_flag(self):
+        self.mute()
+        sys.argv[1:] = ['--version']
+        run()
+        sys.stdout.seek(0)
+        self.assertEquals('rogue_scores v%s\n' % rogue_scores.__version__,
+                          sys.stdout.read())
+        self.assertEquals(0, self._last_exit)
