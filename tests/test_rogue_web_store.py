@@ -50,15 +50,116 @@ class TestRogueStoreHelpers(unittest.TestCase):
                           parse_text('killed on level 3 by hypothermia.'))
 
 
-# class TestRogueWebStore(unittest.TestCase):
+class TestRogueScore(unittest.TestCase):
+
+    def setUp(self):
+        self.s = Score()
+
+
+    # == init == #
+
+    def test_score_init(self):
+        self.assertEquals(0, self.s.level)
+        self.assertEquals(0, self.s.score)
+        self.assertEquals(None, self.s.user)
+        self.assertEquals(None, self.s.cause)
+        self.assertEquals(None, self.s.status)
+
+    def test_score_init_with_args(self):
+        s = Score(user='foo', score=12)
+        self.assertEquals(0, s.level)
+        self.assertEquals(12, s.score)
+        self.assertEquals('foo', s.user)
+        self.assertEquals(None, s.cause)
+        self.assertEquals(None, s.status)
+
+    def test_score_init_with_args_more_attrs(self):
+        s = Score(user='foo', score=12, foobar=45)
+        self.assertEquals(45, s.foobar)
+
+    # == .__int__ == #:
+
+    def test_int_empty_score(self):
+        self.assertEquals(0, int(self.s))
+
+    def test_int(self):
+        n = 43419
+        self.assertEquals(n, int(Score(score=n)))
+
+    # == .__eq__ == #
+
+    def test_not_eq_other_type(self):
+        self.assertNotEquals(self.s, 0)
+        self.assertNotEquals(self.s, [])
+        self.assertNotEquals(self.s, self.s.__dict__)
+
+    def test_not_eq_other_score(self):
+        self.assertNotEquals(Score(score=1), Score(score=3))
+
+    def test_eq_empty_score(self):
+        self.assertEquals(Score(), Score())
+
+    def test_eq(self):
+        self.assertEquals(Score(user='foo', score=2),
+                          Score(score=2, user='foo'))
+
+    # == .__gt__ == #
+
+    def test_gt(self):
+        self.assertTrue(Score(score=3) > Score(score=2))
+        self.assertFalse(Score(score=3) > Score(score=3))
+        self.assertFalse(Score(score=3) > Score(score=4))
+
+    def test_gt_int(self):
+        self.assertTrue(Score(score=42) > 17)
+
+    # == .__ge__ == #
+
+    def test_ge(self):
+        self.assertTrue(Score(score=3) >= Score(score=2))
+        self.assertTrue(Score(score=3) >= Score(score=3))
+        self.assertFalse(Score(score=3) >= Score(score=4))
+
+    # == .__lt__ == #
+
+    def test_lt(self):
+        self.assertFalse(Score(score=3) < Score(score=2))
+        self.assertFalse(Score(score=3) < Score(score=3))
+        self.assertTrue(Score(score=3) < Score(score=4))
+
+    # == .__le__ == #
+
+    def test_lt(self):
+        self.assertFalse(Score(score=3) <= Score(score=2))
+        self.assertTrue(Score(score=3) <= Score(score=3))
+        self.assertTrue(Score(score=3) <= Score(score=4))
+
+    # == .__getitem__ == #
+
+    def test_getitem(self):
+        n = 42
+        self.s.foo = n
+        self.assertEquals(n, self.s['foo'])
+
+    # == .__repr__ == #
+
+    def test_repr_empty(self):
+        self.assertEquals('Score(%s)' % str(self.s.__dict__), repr(self.s))
+
+
+class TestRogueScoresStore(unittest.TestCase):
+
+    def setUp(self):
+        self.tmp = tempfile.NamedTemporaryFile(delete=False)
+        self.scores = self.tmp.name
+        self.store = ScoresStore(self.scores)
+
+    def tearDown(self):
+        if os.path.isfile(self.scores):
+            os.unlink(self.scores)
+
+
 # 
-#     def setUp(self):
-#         self.tmp = tempfile.NamedTemporaryFile(delete=False)
-#         self.scores = self.tmp.name
-# 
-#     def tearDown(self):
-#         if os.path.isfile(self.scores):
-#             os.unlink(self.scores)
 # 
 #     # == .init_scores == #
 # 
