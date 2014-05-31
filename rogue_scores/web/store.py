@@ -75,6 +75,15 @@ def parse_text(text):
     return attrs
 
 
+class BadScoreFormatException(Exception):
+    """
+    This exception is raised when a wrongly formatted score is given to a
+    ``ScoresStore`` instance's ``add`` method.
+    """
+    def __init__(self, s):
+        Exception.__init__(self, s or 'Unrecognized format: %s' % str(s))
+
+
 class Score(object):
     """
     A score. This object implements some dict-like methods to provide an easy
@@ -219,8 +228,11 @@ class ScoresStore(object):
         """
         attrs.update(dict(s))
 
-        if 'user' not in attrs:
+        user = re.sub(r'\W+', '', attrs.get('user', ''))
+        if not user:
             return False
+        else:
+            attrs['user'] = user
 
         if 'cause' not in attrs and 'text' in attrs:
             attrs.update(parse_text(attrs['text']))
@@ -236,8 +248,7 @@ class ScoresStore(object):
         if attrs['score'] <= 0 or attrs['level'] < 0:
             return False
 
-        # sanitize username, status, cause, monster
-        user = re.sub(r'\W+', '', attrs['user'])
+        # sanitize status, cause, monster
         for s in ('status', 'cause', 'monster'):
             if attrs.get(s) is not None:
                 attrs[s] = re.sub(r'[^a-z]+', '', str(attrs[s]))
@@ -260,11 +271,12 @@ class ScoresStore(object):
         ct = 0
         for s in scs:
             # old server format, and format sent by the upload script
-            if isinstance(s, tuple) or isinstance(s, list):
-                if len(s) == 3:
+            if not isinstance(s, dict):
+                if (isinstance(s, list) or isinstance(s, tuple)) \
+                        and len(s) == 3:
                     s = {'user': s[0], 'score': s[1], 'text': s[2]}
                 else:
-                    raise Exception("unrecognized format: %s" % str(s))
+                    raise BadScoreFormatException(s)
 
             if self._add(s, **kwargs):
                 ct += 1
