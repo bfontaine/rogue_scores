@@ -37,6 +37,8 @@ def parse_text(text):
     {'level': 6, 'status': 'died', 'cause': 'hypothermia'}
     >>> parse_text("killed on level 3 by hypothermia.")
     {'level': 3, 'status': 'died', 'cause': 'hypothermia'}
+
+    .. versionadded:: 0.0.7
     """
     text = text.strip().lower()
     attrs = {}
@@ -78,6 +80,8 @@ class Score(object):
     A score. This object implements some dict-like methods to provide an easy
     access to its attributes. It have at least these ones: ``level``, ``score``
     (default: ``0``), ``user``, ``status``, ``cause`` (default: ``None``).
+
+    .. versionadded:: 0.0.7
     """
 
     def __init__(self, **kwargs):
@@ -134,6 +138,8 @@ class ScoresStore(object):
     1
     >>> s.save()
     None
+
+    .. versionadded:: 0.0.7
     """
     __slots__ = ['path', 'scores', 'saved']
 
