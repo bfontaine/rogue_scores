@@ -95,9 +95,10 @@ class TestRogueWeb(unittest.TestCase):
                           json.loads(resp.data.decode('utf-8')))
 
     def test_scores_pretty_json(self):
-        FakeRequest.args = { 'pretty': None }
-        with app.app.app_context():
+        app.request = self._req
+        with app.app.test_request_context('/scores?pretty=1'):
             resp = scores_json()
+        txt = resp.data.decode('utf-8')
         self.assertEquals(json.loads(self.json.decode('utf-8')),
-                          json.loads(resp.data.decode('utf-8')))
-        self.assertRegexpMatches(resp.data, '^\\[\n {4}\\{')
+                          json.loads(txt))
+        self.assertRegexpMatches(txt, '^\[\n +\{')
