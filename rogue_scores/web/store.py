@@ -3,12 +3,14 @@
 """
 This modules provides functions to deal with scores stored on the Web server.
 Each score is represented as a dict-like object, with the following keys:
+
     - ``level``
     - ``score``
     - ``user``: user's name
-    - ``cause``: the monster's name if the user was killed, the death cause if
-      the user died of starvation or hypothermia
+    - ``cause``: the monster's name if the user was killed, the death cause
+      if the user died of starvation or hypothermia
     - ``status`` (``str``): ``died``, ``killed``, ``quit``
+
 These keys can be ``None`` (or ``0`` for numerical ones) if the attribute is
 not set.
 """
@@ -22,6 +24,19 @@ def parse_text(text):
     Parse a score's text and return a dictionnary of attributes: ``level``,
     ``status``, ``cause``. Only a subset of these attributes might be returned
     if the text couldn't be parsed or some of them aren't relevant.
+
+    ``status`` can be either ``killed`` (by a monster), ``quit``, ``died``
+    (e.g. of starvation) or ``won``. This function should work with multiple
+    text variants.
+
+    >>> parse_text("killed on level 12 by a quagga.")
+    {'level': 12, 'status': 'killed', 'cause': 'quagga'}
+    >>> parse_text("quit on level 3.")
+    {'level': 3, 'status': 'quit'}
+    >>> parse_text("died of hypothermia on level 6")
+    {'level': 6, 'status': 'died', 'cause': 'hypothermia'}
+    >>> parse_text("killed on level 3 by hypothermia.")
+    {'level': 3, 'status': 'died', 'cause': 'hypothermia'}
     """
     text = text.strip().lower()
     attrs = {}
@@ -59,17 +74,25 @@ def parse_text(text):
 
 
 class Score(object):
+    """
+    A score. This object implements some dict-like methods to provide an easy
+    access to its attributes. It have at least these ones: ``level``, ``score``
+    (default: ``0``), ``user``, ``status``, ``cause`` (default: ``None``).
+    """
+
     def __init__(self, **kwargs):
+        """
+        Create a new score. Any attribute can be added via a keyword argument.
+        """
         self.level = self.score = 0
         self.user = self.cause = self.status = None
         self.__dict__.update(kwargs)
 
     def dump(self):
+        """
+        Return a parsable string representation of this object.
+        """
         return self.json()
-
-    def load(data):
-        ls = json.loads(data)
-        return list(map(Score, ls))
 
     def __int__(self):
         return self.score
@@ -104,14 +127,23 @@ class Score(object):
 
 class ScoresStore(object):
     """
-    A scores store
+    A scores store. This is based on a JSON file, but the interface should not
+    depend on the underlying storage method.
+
+    >>> s = ScoresStore('/tmp/foo')
+    >>> s.add({'user': 'foo', 'level': 42, 'status': 'quit'})
+    1
+    >>> len(s)
+    1
+    >>> s.save()
+    None
     """
     __slots__ = ['path', 'scores', 'saved']
 
     def __init__(self, path=None, **kwargs):
         """
         Create a new store in the given file path. The file is created if it
-        doesn't exist.
+        doesn't exist. If ``path`` is ``None``, the store is not saved on disk.
         """
         self.path = path
         self.scores = []
@@ -142,17 +174,19 @@ class ScoresStore(object):
         with open(self.path) as f:
             self.scores = json.loads(f.read())
 
-        # support for old format
         if len(self.scores) > 0 and isinstance(self.scores[0], list):
+            # support for old format
             self.scores, scs = [], self.scores
             self.add(*scs)
             self.save()
         else:
+            # get Score objects instead of dicts
             self.scores = list(map(lambda d: Score(**d), self.scores))
 
     def save(self):
         """
-        Save the current scores
+        Save the current scores on disk, if the store's ``path`` is not
+        ``None``.
         """
         if self.path:
             self.saved = True
@@ -161,7 +195,8 @@ class ScoresStore(object):
 
     def _insert(self, s):
         """
-        Insert a score.
+        Insert a score and return ``True`` if it was inserted or ``False`` if
+        it wasn't because it's already there.
         """
         for i, s1 in enumerate(self.scores):
             if s == s1:
@@ -177,7 +212,7 @@ class ScoresStore(object):
     def _add(self, s, **attrs):
         """
         Add a score. This is an internal function, use ``add`` instead. It
-        returns ``True`` if the score has been added, ``False`` instead.
+        returns ``True`` if the score has been added, ``False`` if not.
         """
         attrs.update(dict(s))
 
@@ -207,7 +242,12 @@ class ScoresStore(object):
         """
         Add one or more scores to the store. These are sanitized before
         insertion, and missing informations are added via parsing if possible.
-        It returns the number of inserted items
+        It returns the number of inserted items. An item is not added if:
+
+            - it's already present
+            - it doesn't contain basic info on the score, like no user or a
+              null score
+
         """
         ct = 0
         for s in scs:

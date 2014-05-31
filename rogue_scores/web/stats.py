@@ -11,7 +11,14 @@ from collections import defaultdict
 def stats(scores):
     """
     Compute stats on a ``ScoresStore``, and return a dict that can then be used
-    in a template.
+    in a template. Each value is a string, and current keys are:
+
+        - ``max_level``: higher level, with the corresponding user
+        - ``most_active``: most games played by one user
+        - ``best_killer``: monster with the most kills
+
+    If multiple users or monsters match a criteria for one of these keys, only
+    one of them will be picked.
     """
     if not scores:
         return {}
