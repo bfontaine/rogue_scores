@@ -100,3 +100,4 @@ class TestRogueWeb(unittest.TestCase):
             resp = scores_json()
         self.assertEquals(json.loads(self.json.decode('utf-8')),
                           json.loads(resp.data.decode('utf-8')))
+        self.assertRegexpMatches(resp.data, '^\\[\n {4}\\{')
