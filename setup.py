@@ -38,6 +38,7 @@ well as a Python script to upload local scores to the server""",
     ],
     install_requires=[
         'requests >= 2.3.0',
+        'argparse >= 1.2.1',
     ],
     entry_points={
         'console_scripts':[
