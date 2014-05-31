@@ -1,3 +1,9 @@
+v0.0.8 (31/05/2014)
+-------------------
+
+This release fixes a problem in the previous version where the limit of 20
+scores has been removed.
+
 v0.0.7 (31/05/2014)
 -------------------
 
