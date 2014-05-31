@@ -142,3 +142,17 @@ class TestRogueCLI(unittest.TestCase):
         self.assertEquals(None, self._last_exit)
         self.assertSequenceEqual([scs], self._post_args)
         self.assertEquals({'target':srv}, self._post_kwargs)
+
+    def test_cli_run_env_server(self):
+        self.mute()
+        srv = 'qqq'
+        scs = [('user', 42, 'foo')]
+        rogue_scores.cli.os.environ['ROGUE_SCORES_SERVER'] = srv
+        self.setScores(scs)
+        self.fakePostScores(True)
+        run()
+        self.assertEquals(srv, self.getServer())
+        self.assertEquals(None, self._last_exit)
+        self.assertSequenceEqual([scs], self._post_args)
+        self.assertEquals({'target':srv}, self._post_kwargs)
+        del rogue_scores.cli.os.environ['ROGUE_SCORES_SERVER']

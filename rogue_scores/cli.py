@@ -7,6 +7,7 @@ This module defines the endpoint used to provide the ``rogue_scores`` script.
 
 import sys
 import platform
+import os
 import os.path
 from .upload import post_scores
 from .scores import get_scores
@@ -23,17 +24,20 @@ def set_server():
     """
     Ask the user for a server address and store it in a local file.
     """
-    prompt = 'Which remote server do you want me to use? '
-    if platform.python_version() < '3.0':
-        r = raw_input(prompt)
-    else:
-        r = input(prompt)
-
-    r = r.strip()
+    r = os.environ.get('ROGUE_SCORES_SERVER')
 
     if not r:
-        print('You must provide a remote server address!')
-        return set_server()
+        prompt = 'Which remote server do you want me to use? '
+        if platform.python_version() < '3.0':
+            r = raw_input(prompt)
+        else:
+            r = input(prompt)
+
+        r = r.strip()
+
+        if not r:
+            print('You must provide a remote server address!')
+            return set_server()
 
     if not r.startswith('http'):
         r = 'http://' + r
@@ -60,7 +64,6 @@ def run():
         # this 'return' is here for tests where sys.exit is a mock
         return sys.exit(1)
 
-    print("scs:", scs)
     if post_scores(scs, target=server):
         print("Scores posted with success!")
     else:
