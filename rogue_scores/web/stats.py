@@ -8,6 +8,7 @@ Web server.
 import re
 from collections import defaultdict
 
+
 def stats(scores):
     """
     Compute stats on a ``ScoresStore``, and return a dict that can then be used
@@ -23,7 +24,7 @@ def stats(scores):
     if not scores:
         return {}
 
-    users   = defaultdict(int)
+    users = defaultdict(int)
     killers = defaultdict(int)
     maxlvl = 0
     maxlvl_user = None
@@ -52,6 +53,5 @@ def stats(scores):
             '%s (%d kills)' % tuple(max(killers.items(), key=lambda p: p[1]))
     else:
         s['best_killer'] = '?'
-
 
     return s

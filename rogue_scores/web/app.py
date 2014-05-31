@@ -28,14 +28,15 @@ app.config['SCORES'] = os.environ.get('ROGUE_SCORES_PATH', '.') \
 app.logger.setLevel(logging.DEBUG)
 app.logger.addHandler(FileHandler('rogue_scores.log'))
 
+
 @app.route("/")
 def index():
     store = ScoresStore(app.config['SCORES'])
     return render_template('main.html',
-        scores=store,
-        hostname=request.headers.get('Host'),
-        stats=stats.stats(store)
-    )
+                           scores=store,
+                           hostname=request.headers.get('Host'),
+                           stats=stats.stats(store))
+
 
 @app.route('/scores', methods=['POST'])
 def scores_upload():
@@ -50,6 +51,7 @@ def scores_upload():
     store.add(*scores)
     store.save()
     return 'ok'
+
 
 @app.route('/scores', methods=['GET'])
 def scores_json():

@@ -1,11 +1,19 @@
-v0.0.7 (in development)
------------------------
+v0.0.7 (31/05/2014)
+-------------------
+
+This is a breaking change on the server side API, but is fully compatible with
+previous upload script versions. Unless you have Python code relying on
+``rogue_scores.web``'s functions, it's ok to upgrade.
 
 - more log messages on the server side
 - stats added on the Web page
-- ``/scores`` now serves the JSON scores file
-- scores-related functions moved from ``web`` to ``web.store``
+- ``/scores`` now serves the JSON scores file, and ``/scores?pretty`` serves a
+  pretty-printed version
 - ``rogue_scores.web`` moved to ``rogue_scores.web.app``
+- scores-related functions moved from ``web`` to ``web.store``, with ``Score``
+  and ``ScoresStore`` classes
+- scores are now internally stored as JSON objects instead of list
+- the Web page now shows each score's level, status and cause.
 
 v0.0.6 (27/05/2014)
 -------------------

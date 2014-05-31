@@ -19,6 +19,7 @@ import os.path
 import re
 import json
 
+
 def parse_text(text):
     """
     Parse a score's text and return a dictionnary of attributes: ``level``,
@@ -135,6 +136,7 @@ class Score(object):
     def __repr__(self):
         return 'Score(%s)' % str(self.__dict__)
 
+
 class ScoresStore(object):
     """
     A scores store. This is based on a JSON file, but the interface should not
@@ -168,7 +170,6 @@ class ScoresStore(object):
             self.save()
         else:
             self._load()
-
 
     def json(self, **kwargs):
         """
