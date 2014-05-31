@@ -88,12 +88,6 @@ class Score(object):
         self.user = self.cause = self.status = None
         self.__dict__.update(kwargs)
 
-    def dump(self):
-        """
-        Return a parsable string representation of this object.
-        """
-        return self.json()
-
     def __int__(self):
         return self.score
 
@@ -106,6 +100,9 @@ class Score(object):
                 return False
 
         return True
+
+    def __ne__(self, o):
+        return not self.__eq__(o)
 
     def __gt__(self, o):
         return int(self) > int(o)
