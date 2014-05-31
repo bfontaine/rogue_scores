@@ -69,7 +69,7 @@ def parse_text(text):
             attrs['status'] = 'died'
             return attrs
 
-    if re.match('won .*', text):
+    if text.startswith('won '):
         attrs['status'] = 'won'
 
     return attrs
