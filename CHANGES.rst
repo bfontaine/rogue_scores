@@ -1,3 +1,8 @@
+v0.0.9 (in development)
+-----------------------
+
+- support for `ROGUE_SCORES_SERVER`
+
 v0.0.8 (31/05/2014)
 -------------------
 
