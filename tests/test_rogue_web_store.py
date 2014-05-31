@@ -381,6 +381,24 @@ class TestRogueScoresStore(unittest.TestCase):
             {'user': 'bar', 'score': 18, 'status': 'quit', 'level': 42}
         ))
 
+    # == .get == #
+
+    def test_get_neg(self):
+        self.store.scores = [1, 2, 3]
+        self.assertSequenceEqual([], self.store.get(-42))
+
+    def test_get_0(self):
+        self.store.scores = [1, 2, 3]
+        self.assertSequenceEqual([], self.store.get(0))
+
+    def test_get_1(self):
+        self.store.scores = [1, 2, 3]
+        self.assertSequenceEqual([1], self.store.get(1))
+
+    def test_get(self):
+        self.store.scores = [1, 2, 3]
+        self.assertSequenceEqual([1, 2], self.store.get(2))
+
     # == .__iter__ == #
 
     def test_iter(self):

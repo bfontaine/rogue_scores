@@ -284,6 +284,12 @@ class ScoresStore(object):
 
         return ct
 
+    def get(self, limit):
+        """
+        Return at most ``limit`` scores
+        """
+        return self.scores[:limit]
+
     def __iter__(self):
         for s in self.scores:
             yield s

@@ -33,7 +33,7 @@ app.logger.addHandler(FileHandler('rogue_scores.log'))
 def index():
     store = ScoresStore(app.config['SCORES'])
     return render_template('main.html',
-                           scores=store,
+                           scores=store.get(20),
                            hostname=request.headers.get('Host'),
                            stats=stats.stats(store))
 
