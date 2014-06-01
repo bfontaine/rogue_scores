@@ -30,6 +30,10 @@ Install
 
 The script as well as the Web server work with both Python 2.x and 3.x.
 
+Upgrade with: ::
+
+    [sudo] pip install -U rogue_scores
+
 Usage
 -----
 
