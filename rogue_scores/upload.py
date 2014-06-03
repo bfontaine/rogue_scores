@@ -6,6 +6,7 @@ This module provides tools to upload Rogue scores to a remote server.
 
 import json
 import requests
+from . import __version__
 
 
 def post_scores(scores, **kwargs):
@@ -22,8 +23,10 @@ def post_scores(scores, **kwargs):
                                kwargs.get('target', 'localhost:5000'))
 
     payload = {'scores': json.dumps(scores)}
+    headers = {'User-Agent': 'Rogue-scores v%s' % __version__}
     try:
-        r = requests.post(url, data=payload, allow_redirects=True)
+        r = requests.post(url, data=payload, headers=headers,
+                          allow_redirects=True)
     except requests.exceptions.ConnectionError:
         return False
 
