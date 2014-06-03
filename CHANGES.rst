@@ -1,11 +1,12 @@
-v0.0.9 (in development)
------------------------
+v0.0.9 (03/06/2014)
+-------------------
 
-This version concerns only the upload script.
+All changes of this version are in the upload script.
 
 - support for ``ROGUE_SCORES_SERVER``
 - ``--version`` flag support
 - redirections are now followed
+- User-Agent header added
 
 v0.0.8 (31/05/2014)
 -------------------
