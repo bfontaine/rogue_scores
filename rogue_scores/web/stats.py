@@ -40,7 +40,7 @@ def stats(scores):
 
     s = {
         'max_level': maxlvl_user,
-        'most_active': \
+        'most_active':
             '%s (%d games)' % tuple(max(users.items(), key=lambda p: p[1])),
     }
 
