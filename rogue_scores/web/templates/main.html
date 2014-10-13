@@ -46,9 +46,9 @@
       <h3>Install Rogue</h3>
       <h4>On GNU/Linux</h4>
       <pre><code>wget http://rogue.rogueforge.net/files/rogue5.4/rogue5.4.4-src.tar.gz
-wget https://raw.githubusercontent.com/bfontaine/rogue_scores/master/utils/rogue-scorefile.patch
 tar xzf rogue5.4.4-src.tar.gz &amp;&amp; cd rogue5.4.4
 ./configure --disable-debug --disable-dependency-tracking
+wget https://raw.githubusercontent.com/bfontaine/rogue_scores/master/utils/rogue-scorefile.patch
 patch &lt; rogue-scorefile.patch
 mkdir -p /var/rogue
 [sudo] make install</code></pre>
