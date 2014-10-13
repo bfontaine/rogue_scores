@@ -33,7 +33,7 @@ app.logger.addHandler(FileHandler('rogue_scores.log'))
 def index():
     count = request.args.get('count')
     try:
-        count = min(int(count), 1)
+        count = max(int(count), 1)
     except:
         count = 20  # default
     store = ScoresStore(app.config['SCORES'])
