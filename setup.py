@@ -1,8 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-from os.path import dirname
-import sys
-
 import setuptools
 from distutils.core import setup
 
