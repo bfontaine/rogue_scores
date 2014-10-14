@@ -1,3 +1,8 @@
+v0.1.0 (upcoming version)
+-------------------------
+
+- favicon added on the web page
+
 v0.0.9 (03/06/2014)
 -------------------
 
